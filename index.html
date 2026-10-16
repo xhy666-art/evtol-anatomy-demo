@@ -1,0 +1,765 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>推力，向哪里去？ · eVTOL 交互解剖</title>
+<style>
+:root{color-scheme:light;--paper:#f4f2eb;--ink:#25372f;--muted:#6c756e;--line:#d8dbd0;--green:#367650;--orange:#b86236}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.65 'Segoe UI','Microsoft YaHei',sans-serif}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid #e4aa52;outline-offset:4px}main{max-width:1500px;margin:auto;padding:30px 42px}.mast{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:16px;font-size:12px;letter-spacing:2px}.mast span:last-child{letter-spacing:0;color:var(--muted)}header{display:flex;justify-content:space-between;align-items:end;gap:35px;margin:34px 0 25px}h1{font-size:clamp(32px,4vw,57px);letter-spacing:-2px;line-height:1.2;margin:9px 0 12px;font-weight:550}.eyebrow{color:var(--green);font-size:11px;letter-spacing:3px}header p{max-width:440px;color:var(--muted);margin:0 0 4px;font-size:14px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:22px}.figure{background:#17251f;border-radius:5px;overflow:hidden;color:#d8e2d8;position:relative}.fighead,.figfoot{display:flex;justify-content:space-between;gap:15px;padding:18px 23px;font-size:11px;letter-spacing:1px}.fighead{border-bottom:1px solid #ffffff13}.figfoot{border-top:1px solid #ffffff13;color:#9db3a5;letter-spacing:0}.fighead b{color:#a8c7b4;font-weight:400}svg{width:100%;height:auto;display:block;aspect-ratio:900/550;background:radial-gradient(ellipse at 50% 60%,#26392e,transparent 65%)}.stage{position:relative}.stage .tag{position:absolute;top:16px;left:23px;font-size:11px;color:#8fab99}.stage .legend{position:absolute;bottom:14px;left:23px;font-size:11px;color:#c3cfc5}.legend i{display:inline-block;width:8px;height:8px;background:#9dddac;border-radius:50%;margin-right:7px}.legend i:nth-of-type(2){background:#eab17a;margin-left:16px}.summary{display:grid;grid-template-columns:repeat(3,1fr);background:#1b2b23;border-top:1px solid #ffffff13}.metric{padding:17px 22px;border-right:1px solid #ffffff12}.metric:last-child{border:0}.metric small{display:block;font-size:10px;color:#a3b4a8}.metric strong{font:500 29px/1.5 'Consolas',monospace;color:#e5eedf}.metric em{font-style:normal;font-size:11px;margin-left:5px;color:#9caf9e}.control{border-top:2px solid var(--ink);padding-top:14px}h2{font-size:18px;margin:0 0 15px;font-weight:550}.control h2 span{font:11px Consolas;color:var(--muted);margin-right:12px}.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 8px;border-radius:3px}.modes button.active{background:var(--ink);border-color:var(--ink);color:#f5f3ec}.field{margin-top:22px}.label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px}.label output{font-family:Consolas;color:var(--green)}input[type=range]{width:100%;accent-color:var(--green);cursor:pointer}.ends{display:flex;justify-content:space-between;color:var(--muted);font-size:10px}.switches{display:flex;flex-direction:column;gap:11px;margin:20px 0;font-size:12px}.switches label{cursor:pointer;display:flex;gap:9px;align-items:center}.switches input{accent-color:var(--green);width:15px;height:15px}.note{padding:14px 15px;background:#e9e8df;font-size:12px;line-height:1.8;border-left:2px solid var(--green);min-height:102px}.note b{display:block;margin-bottom:4px}.transport{display:flex;gap:6px;margin-top:16px}.transport button{font-size:11px;flex:1}.section{margin-top:30px;border-top:1px solid var(--line);padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:35px}.parts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}.parts button{font-size:12px;padding:6px 12px}.parts button.active{background:#dce5d8;border-color:#9bb19b}.detail h3{font-size:17px;margin:0 0 8px}.detail p{margin:0;color:var(--muted);font-size:13px;max-width:630px}.chain{display:flex;align-items:center;gap:7px;font-size:11px;margin-top:15px;flex-wrap:wrap}.chain span{border-bottom:2px solid #99ac91;padding-bottom:4px}.chain i{font-style:normal;color:#99a493}.truth{border-left:1px solid var(--line);padding-left:26px}.truth h3{font-size:14px;margin:0 0 8px}.truth p{font-size:12px;color:var(--muted);margin:0 0 9px}.truth b{color:var(--ink);font-weight:500}footer{border-top:1px solid var(--line);padding:15px 0;margin-top:27px;font-size:10px;color:var(--muted);display:flex;justify-content:space-between}.hot{cursor:pointer}.hot:hover{filter:brightness(1.2)}@media(max-width:1000px){main{padding:24px}.layout{grid-template-columns:minmax(0,1fr) 275px}header{display:block}header p{max-width:660px;margin-top:15px}.metric{padding:13px}.metric strong{font-size:24px}}@media(max-width:740px){main{padding:20px 16px}.mast{font-size:10px;letter-spacing:1px}.mast span:last-child{max-width:150px;text-align:right}header{margin-top:25px}h1{letter-spacing:-1px}.layout{grid-template-columns:1fr}.control{margin-top:6px}.section{grid-template-columns:1fr;gap:22px}.truth{padding:16px 0 0;border-left:0;border-top:1px solid var(--line)}.fighead,.figfoot{padding:13px;font-size:10px}.stage .tag{left:13px;top:9px;font-size:9px}.stage .legend{left:13px;bottom:6px;font-size:9px}.metric strong{font-size:22px}.metric{padding:10px}.metric small{font-size:9px}.figfoot{flex-wrap:wrap}footer{gap:15px}.note{min-height:0}}
+</style>
+<main><div class="mast"><span>ANATOMY / 飞行原理实验室</span><span>01 — 电动垂直起降飞行器</span></div><header><div><div class="eyebrow">INTERACTIVE FIELD NOTES</div><h1>推力，向哪里去？</h1></div><p>风扇旋转只是开始。改变推力的大小与方向，才能决定它是悬停、前飞，还是倾斜。亲手调整，看看图片里的飞行器要怎样才能飞起来。</p></header>
+<div class="layout"><section class="figure" aria-label="飞行器交互模型"><div class="fighead"><span>FIG. 01 <b> / 六涵道概念演示</b></span><span id="viewName">假设可倾转 · 悬停</span></div><div class="stage"><span class="tag">等距剖视 / 非原机工程复刻</span><svg viewBox="0 0 900 550" id="scene" role="img" aria-label="六个涵道风扇及电池、电控、机身的等距剖视图"><defs><marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#a4e3b4"/></marker><marker id="weight" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3L0 6Z" fill="#eab17a"/></marker></defs><g id="ground"></g><g id="model"></g><g id="vectors"></g></svg><div class="legend"><i></i>风扇推力<i></i>重力</div></div><div class="summary"><div class="metric"><small>垂直推力 / 重力</small><strong id="lift">1.00</strong><em>倍</em></div><div class="metric"><small>水平推力 / 重力</small><strong id="horizontal">0.00</strong><em>倍</em></div><div class="metric"><small>垂直方向净加速度</small><strong id="accel">0.0</strong><em>m/s²</em></div></div><div class="figfoot"><span>点击下方部件查看工作原理 · 所有读数来自同一简化模型</span><span id="state" aria-live="polite">理想悬停平衡</span></div></section>
+<aside class="control"><h2><span>01</span>改变飞行状态</h2><div class="modes"><button data-mode="hover" class="active">悬停</button><button data-mode="forward">前飞</button><button data-mode="roll">横滚</button></div><div class="field"><label class="label" for="power">总推力设定 <output id="powerValue">100% W</output></label><input id="power" type="range" min="0" max="160" value="100" step="1"><div class="ends"><span>关闭</span><span>100% = 等于重力</span><span>160%</span></div></div><div class="field"><label class="label" for="tilt">风扇轴线偏离竖直 <output id="tiltValue">0°</output></label><input id="tilt" type="range" min="0" max="90" value="0" step="1"><div class="ends"><span>0° 向上推</span><span>90° 水平推</span></div></div><div class="switches"><label><input type="checkbox" id="original">对照原图：风扇盘面近竖直</label><label><input type="checkbox" id="cutaway" checked>打开机身剖视</label><label><input type="checkbox" id="showForces" checked>显示推力与重力</label></div><div class="note" id="explanation"></div><div class="transport"><button id="pause">暂停动画</button><button id="reset">重置实验</button></div></aside></div>
+<section class="section"><div><h2>02 / 每个部件，负责什么？</h2><div class="parts"><button data-part="battery" class="active">电池组</button><button data-part="esc">电控 / 电机</button><button data-part="fan">涵道风扇</button><button data-part="flight">飞行控制</button><button data-part="frame">机身 / 起落架</button></div><div class="detail" id="detail"></div><div class="chain"><span>电池 / 直流电</span><i>→</i><span>电控 / 调制电流</span><i>→</i><span>电机 / 轴功率</span><i>→</i><span>风扇 / 空气动量</span></div></div><div class="truth"><h3>读图时，先分清三件事</h3><p><b>能看见：</b>图中画有座舱、多个涵道风扇、电池与起落架，更像载人 eVTOL 概念图；是否支持无人驾驶无法确认。</p><p><b>存在疑点：</b>风扇轴线若接近水平，推力也主要水平。没有倾转、导流或其他升力装置，就不能只靠这些风扇悬停。涵道也不必然更安静或更高效。</p><p><b>本页假设：</b>六风扇对称布局、独立电机、可倾转轴线及理想均匀配力。图内中央大电机不代表已证明存在机械传动。本页不估计航程、功耗或安全性。</p></div></section><footer><span>ANATOMY · 以用户提供的结构示意图为讨论起点</span><span>教学模型 / 非飞控模拟器 · g = 9.81 m/s²</span></footer></main>
+<script>
+const AZIMUTH = 45;
+const ELEVATION = 30;
+const SHADES = 4;
+const RADIANS = Math.PI / 180;
+const UNIT = Math.sqrt(1.6);
+function cameraOf({ scale, azimuth = AZIMUTH, elevation = ELEVATION }) {
+    const a = azimuth * RADIANS;
+    const e = elevation * RADIANS;
+    return { sinA: Math.sin(a), cosA: Math.cos(a), sinE: Math.sin(e), cosE: Math.cos(e), k: scale * UNIT };
+}
+function iso([x, y, z], projection) {
+    const { origin } = projection;
+    const { sinA, cosA, sinE, cosE, k } = cameraOf(projection);
+    return [origin[0] + (x * sinA - y * cosA) * k, origin[1] + ((x * cosA + y * sinA) * sinE - z * cosE) * k];
+}
+function towardViewer(projection) {
+    const { sinA, cosA } = cameraOf(projection);
+    return [cosA, sinA];
+}
+function depthOf([x, y, z], projection) {
+    const { sinA, cosA, sinE, cosE } = cameraOf(projection);
+    return (x * cosA + y * sinA) * cosE + z * sinE;
+}
+const tenth = (value) => {
+    const text = (Math.round(value * 10) / 10).toFixed(1).replace(/\.0$/, "");
+    return text === "-0" ? "0" : text;
+};
+function pathOf(points, closed = false) {
+    if (!points.length)
+        return "";
+    return points.map(([x, y], at) => `${at ? "L" : "M"}${tenth(x)} ${tenth(y)}`).join("") + (closed ? "Z" : "");
+}
+const joinPaths = (paths) => paths.filter(Boolean).join("");
+function roundedPlan({ x, y, w, d, r }, steps = 8) {
+    const radius = Math.max(0, Math.min(r, w / 2, d / 2));
+    const corners = [
+        [x + w - radius, y + radius, -90],
+        [x + w - radius, y + d - radius, 0],
+        [x + radius, y + d - radius, 90],
+        [x + radius, y + radius, 180],
+    ];
+    const out = [];
+    for (const [cx, cy, start] of corners) {
+        const count = radius > 0 ? steps : 0;
+        for (let step = 0; step <= count; step++) {
+            const angle = (start + (count ? (90 * step) / count : 45)) * RADIANS;
+            out.push([cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)]);
+        }
+    }
+    return out;
+}
+function signedArea(points) {
+    let area = 0;
+    for (let index = 0; index < points.length; index++) {
+        const [ax, ay] = points[index];
+        const [bx, by] = points[(index + 1) % points.length];
+        area += ax * by - bx * ay;
+    }
+    return area / 2;
+}
+const oriented = (points) => (signedArea(points) < 0 ? [...points].reverse() : points);
+function convexHull(points) {
+    const sorted = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    if (sorted.length < 3)
+        return sorted;
+    const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const lower = [];
+    for (const point of sorted) {
+        while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0)
+            lower.pop();
+        lower.push(point);
+    }
+    const upper = [];
+    for (let index = sorted.length - 1; index >= 0; index--) {
+        const point = sorted[index];
+        while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0)
+            upper.pop();
+        upper.push(point);
+    }
+    return [...lower.slice(0, -1), ...upper.slice(0, -1)];
+}
+function runsOf(flags, want) {
+    const count = flags.length;
+    const runs = [];
+    const start = flags.findIndex((flag, index) => flag !== flags[(index + count - 1) % count]);
+    if (start < 0)
+        return flags[0] === want ? [Array.from({ length: count + 1 }, (_, index) => index % count)] : [];
+    let run = null;
+    for (let step = 0; step < count; step++) {
+        const index = (start + step) % count;
+        if (flags[index] === want) {
+            if (!run)
+                run = [index];
+            run.push((index + 1) % count);
+        }
+        else if (run) {
+            runs.push(run);
+            run = null;
+        }
+    }
+    if (run)
+        runs.push(run);
+    return runs;
+}
+function extrude(ring, z, height, projection, options = {}) {
+    const convex = options.convex ?? true;
+    const count = ring.length;
+    const counter = signedArea(ring) > 0;
+    const [vx, vy] = towardViewer(projection);
+    const { sinA, cosA } = cameraOf(projection);
+    const normals = ring.map(([ax, ay], index) => {
+        const [bx, by] = ring[(index + 1) % count];
+        const dx = bx - ax;
+        const dy = by - ay;
+        const length = Math.hypot(dx, dy) || 1;
+        return (counter ? [dy / length, -dx / length] : [-dy / length, dx / length]);
+    });
+    const facing = normals.map(([nx, ny]) => nx * vx + ny * vy > 1e-9);
+    const top = ring.map(([x, y]) => iso([x, y, z + height], projection));
+    const bottom = ring.map(([x, y]) => iso([x, y, z], projection));
+    const outline = [];
+    const crease = [];
+    for (const run of runsOf(facing, false))
+        outline.push(pathOf(run.map((index) => top[index])));
+    for (const run of runsOf(facing, true)) {
+        crease.push(pathOf(run.map((index) => top[index])));
+        if (height > 0)
+            outline.push(pathOf(run.map((index) => bottom[index])));
+    }
+    if (height > 0) {
+        for (let index = 0; index < count; index++) {
+            if (facing[(index + count - 1) % count] !== facing[index])
+                outline.push(pathOf([top[index], bottom[index]]));
+        }
+    }
+    let fill;
+    if (convex) {
+        fill = pathOf(convexHull([...top, ...bottom]), true);
+    }
+    else {
+        const parts = [pathOf(oriented(top), true), pathOf(oriented(bottom), true)];
+        for (let index = 0; index < count; index++) {
+            if (!facing[index])
+                continue;
+            const next = (index + 1) % count;
+            parts.push(pathOf(oriented([top[index], top[next], bottom[next], bottom[index]]), true));
+        }
+        fill = parts.join("");
+    }
+    const buckets = Array.from({ length: SHADES }, () => []);
+    if (height > 0) {
+        const [lx, ly] = [-sinA, cosA];
+        for (let index = 0; index < count; index++) {
+            if (!facing[index])
+                continue;
+            const [nx, ny] = normals[index];
+            const lit = (nx * lx + ny * ly + 1) / 2;
+            const shade = Math.min(SHADES - 1, Math.max(0, Math.floor(lit * SHADES)));
+            const next = (index + 1) % count;
+            buckets[shade].push(pathOf(oriented([top[index], top[next], bottom[next], bottom[index]]), true));
+        }
+    }
+    let bevel;
+    if (options.bevel && options.bevel > 0) {
+        const by = options.bevel;
+        const inset = ring.map(([x, y], index) => {
+            const [ax, ay] = normals[(index + count - 1) % count];
+            const [bx, by2] = normals[index];
+            const mx = ax + bx;
+            const my = ay + by2;
+            const length = Math.hypot(mx, my) || 1;
+            return [x - (mx / length) * by, y - (my / length) * by];
+        });
+        const insetTop = inset.map(([x, y]) => iso([x, y, z + height], projection));
+        bevel = runsOf(facing, true)
+            .map((run) => pathOf([top[run[0]], ...run.slice(1, -1).map((index) => insetTop[index]), top[run[run.length - 1]]]))
+            .join("");
+    }
+    return {
+        fill,
+        outline: outline.join(""),
+        crease: crease.join(""),
+        top: pathOf(oriented(top), true),
+        shades: buckets.map((paths) => paths.join("")),
+        bevel,
+    };
+}
+const ringOf = (plan, steps = 8) => roundedPlan(plan, steps);
+function slabOf(plan, z, height, projection, steps = 8, bevel = 0) {
+    return extrude(ringOf(plan, steps), z, height, projection, { convex: true, bevel });
+}
+function circleRing(cx, cy, radius, steps = 40) {
+    return Array.from({ length: steps }, (_, step) => {
+        const angle = (step / steps) * Math.PI * 2;
+        return [cx + radius * Math.cos(angle), cy + radius * Math.sin(angle)];
+    });
+}
+function cylinder(cx, cy, radius, z, height, projection, steps = 32, bevel = 0) {
+    return extrude(circleRing(cx, cy, radius, steps), z, height, projection, { convex: true, bevel });
+}
+const insetPlan = ({ x, y, w, d, r }, by) => ({ x: x + by, y: y + by, w: w - by * 2, d: d - by * 2, r: Math.max(0, r - by) });
+function onTop(points, z, projection, closed = false) {
+    return pathOf(points.map(([x, y]) => iso([x, y, z], projection)), closed);
+}
+const planOutline = (plan, z, projection, steps = 8) => onTop(ringOf(plan, steps), z, projection, true);
+const lineOnTop = (from, to, z, projection) => onTop([from, to], z, projection);
+const segment = (from, to, projection) => pathOf([iso(from, projection), iso(to, projection)]);
+const rise = (at, from, to, projection) => segment([at[0], at[1], from], [at[0], at[1], to], projection);
+const ring = (cx, cy, radius, z, projection, steps = 40) => onTop(circleRing(cx, cy, radius, steps), z, projection, true);
+const pointsAt = (points, projection) => points.map((point) => iso(point, projection));
+function dotGrid(x, y, columns, rows, gap, z, projection) {
+    const dots = [];
+    for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++)
+            dots.push(iso([x + column * gap, y + row * gap, z], projection));
+    }
+    return dots;
+}
+function corners({ x, y, w, d }, inset = 0) {
+    return [
+        [x + inset, y + inset],
+        [x + w - inset, y + inset],
+        [x + inset, y + d - inset],
+        [x + w - inset, y + d - inset],
+    ];
+}
+function boxCorners({ x, y, w, d }, z0, z1) {
+    const out = [];
+    for (const px of [x, x + w])
+        for (const py of [y, y + d])
+            for (const z of [z0, z1])
+                out.push([px, py, z]);
+    return out;
+}
+function knurl(cx, cy, radius, z0, z1, count, projection, inset = 0.4) {
+    const [vx, vy] = towardViewer(projection);
+    const lines = [];
+    for (let index = 0; index < count; index++) {
+        const angle = (index / count) * Math.PI * 2;
+        const nx = Math.cos(angle);
+        const ny = Math.sin(angle);
+        if (nx * vx + ny * vy < 0.15)
+            continue;
+        lines.push(segment([cx + radius * nx, cy + radius * ny, z0 + inset], [cx + radius * nx, cy + radius * ny, z1 - inset], projection));
+    }
+    return lines.join("");
+}
+function sideArc(cx, cy, radius, z, projection, steps = 24) {
+    const [vx, vy] = towardViewer(projection);
+    const facing = Math.atan2(vy, vx);
+    const points = [];
+    for (let step = 0; step <= steps; step++) {
+        const angle = facing - Math.PI / 2 + (step / steps) * Math.PI;
+        points.push(iso([cx + radius * Math.cos(angle), cy + radius * Math.sin(angle), z], projection));
+    }
+    return pathOf(points);
+}
+function ringSeam(ring, z, projection) {
+    const count = ring.length;
+    const counter = signedArea(ring) > 0;
+    const [vx, vy] = towardViewer(projection);
+    const facing = ring.map(([ax, ay], index) => {
+        const [bx, by] = ring[(index + 1) % count];
+        const dx = bx - ax;
+        const dy = by - ay;
+        const [nx, ny] = counter ? [dy, -dx] : [-dy, dx];
+        return nx * vx + ny * vy > 1e-9;
+    });
+    return runsOf(facing, true).map((run) => pathOf(run.map((index) => iso([ring[index][0], ring[index][1], z], projection)))).join("");
+}
+const sideSeam = (plan, z, projection, steps = 8) => ringSeam(ringOf(plan, steps), z, projection);
+function sideRing(center, radius, axis, projection, steps = 20) {
+    const [px, py, pz] = center;
+    const points = [];
+    for (let step = 0; step < steps; step++) {
+        const angle = (step / steps) * Math.PI * 2;
+        const u = radius * Math.cos(angle);
+        const v = radius * Math.sin(angle);
+        points.push(iso(axis === "x" ? [px, py + u, pz + v] : [px + u, py, pz + v], projection));
+    }
+    return pathOf(points, true);
+}
+function coil(from, to, center, radius, turns, axis, projection, perTurn = 16) {
+    const count = Math.max(1, Math.round(turns * perTurn));
+    const back = [];
+    const front = [];
+    let run = [];
+    let near = null;
+    for (let index = 0; index <= count; index++) {
+        const share = index / count;
+        const angle = share * turns * Math.PI * 2;
+        const u = radius * Math.cos(angle);
+        const v = radius * Math.sin(angle);
+        const along = from + (to - from) * share;
+        const point = axis === "x" ? [along, center[0] + u, center[1] + v] : [center[0] + u, along, center[1] + v];
+        const normal = axis === "x" ? [0, Math.cos(angle), Math.sin(angle)] : [Math.cos(angle), 0, Math.sin(angle)];
+        const facing = depthOf(normal, projection) > 0;
+        const flat = iso(point, projection);
+        if (near === null)
+            near = facing;
+        if (facing !== near) {
+            run.push(flat);
+            (near ? front : back).push(pathOf(run));
+            run = [flat];
+            near = facing;
+            continue;
+        }
+        run.push(flat);
+    }
+    if (run.length > 1)
+        (near ? front : back).push(pathOf(run));
+    return { back: back.join(""), front: front.join("") };
+}
+function topTicks(from, to, step, every, edge, z, lengths, projection, axis = "x") {
+    const minor = [];
+    const major = [];
+    const first = Math.ceil(from / step) * step;
+    for (let at = first, index = Math.round(first / step); at <= to + 1e-9; at += step, index++) {
+        const big = index % every === 0;
+        const length = big ? lengths[1] : lengths[0];
+        const a = axis === "x" ? [at, edge] : [edge, at];
+        const b = axis === "x" ? [at, edge + length] : [edge + length, at];
+        (big ? major : minor).push(lineOnTop(a, b, z, projection));
+    }
+    return { minor: minor.join(""), major: major.join("") };
+}
+function sideTicks(from, to, step, every, face, top, lengths, projection, axis = "x") {
+    const minor = [];
+    const major = [];
+    const first = Math.ceil(from / step) * step;
+    for (let at = first, index = Math.round(first / step); at <= to + 1e-9; at += step, index++) {
+        const big = index % every === 0;
+        const length = big ? lengths[1] : lengths[0];
+        const a = axis === "x" ? [at, face, top] : [face, at, top];
+        const b = axis === "x" ? [at, face, top - length] : [face, at, top - length];
+        (big ? major : minor).push(segment(a, b, projection));
+    }
+    return { minor: minor.join(""), major: major.join("") };
+}
+function radialTicks(cx, cy, radius, count, every, z, lengths, projection, from = 0, span = Math.PI * 2) {
+    const minor = [];
+    const major = [];
+    const closed = Math.abs(span - Math.PI * 2) < 1e-9;
+    const steps = closed ? count : count + 1;
+    for (let index = 0; index < steps; index++) {
+        const angle = from + (index / count) * span;
+        const big = index % every === 0;
+        const inner = radius - (big ? lengths[1] : lengths[0]);
+        const sx = Math.sin(angle);
+        const sy = -Math.cos(angle);
+        (big ? major : minor).push(lineOnTop([cx + sx * inner, cy + sy * inner], [cx + sx * radius, cy + sy * radius], z, projection));
+    }
+    return { minor: minor.join(""), major: major.join("") };
+}
+const haloOf = (plan, z, height, projection) => slabOf(plan, z, height, projection).fill;
+function axisVector(projection, [dx, dy, dz]) {
+    const origin = iso([0, 0, 0], projection);
+    const moved = iso([dx, dy, dz], projection);
+    return [moved[0] - origin[0], moved[1] - origin[1]];
+}
+const fine = (value) => Math.round(value * 100) / 100;
+function translateAlong(projection, by) {
+    const [x, y] = axisVector(projection, by);
+    return `translate(${fine(x)} ${fine(y)})`;
+}
+const thousandth = (value) => Math.round(value * 1000) / 1000;
+function axesAt(at, z, projection) {
+    const origin = iso([at[0], at[1], z], projection);
+    const along = (point) => {
+        const [px, py] = iso(point, projection);
+        return [px - origin[0], py - origin[1]];
+    };
+    return { origin, x: along([at[0] + 1, at[1], z]), y: along([at[0], at[1] + 1, z]), z: along([at[0], at[1], z + 1]) };
+}
+const matrixOf = (u, v, origin) => `matrix(${thousandth(u[0])} ${thousandth(u[1])} ${thousandth(v[0])} ${thousandth(v[1])} ${thousandth(origin[0])} ${thousandth(origin[1])})`;
+function holdStill(element, [dx, dy]) {
+    const text = dx || dy ? `translate(${-dx} ${-dy})` : "";
+    element.querySelectorAll("[data-hold]").forEach((node) => (text ? node.setAttribute("transform", text) : node.removeAttribute("transform")));
+}
+function topMatrix(at, z, projection, along = "x") {
+    const { origin, x, y } = axesAt(at, z, projection);
+    return along === "x" ? matrixOf(x, y, origin) : matrixOf([-y[0], -y[1]], x, origin);
+}
+function sideMatrix(at, z, projection, face) {
+    const { origin, x, y, z: up } = axesAt(at, z, projection);
+    const down = [-up[0], -up[1]];
+    return face === "left" ? matrixOf(x, down, origin) : matrixOf([-y[0], -y[1]], down, origin);
+}
+function screenRise(height, projection) {
+    const { cosE, k } = cameraOf(projection);
+    return height * cosE * k;
+}
+function fitProjection(points, width, height, { pad = 24, headroom = 0, azimuth = AZIMUTH, elevation = ELEVATION } = {}) {
+    const unit = { origin: [0, 0], scale: 1, azimuth, elevation };
+    const flat = points.map((point) => iso(point, unit));
+    const xs = flat.map(([x]) => x);
+    const ys = flat.map(([, y]) => y);
+    const left = Math.min(...xs);
+    const right = Math.max(...xs);
+    const up = Math.min(...ys);
+    const down = Math.max(...ys);
+    const scale = Math.min((width - pad * 2) / (right - left), (height - pad * 2 - headroom) / (down - up));
+    return {
+        origin: [width / 2 - ((left + right) / 2) * scale, headroom + (height - headroom) / 2 - ((up + down) / 2) * scale],
+        scale,
+        azimuth,
+        elevation,
+    };
+}
+const escape = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const attrs = (pairs) => Object.entries(pairs)
+    .filter(([, value]) => value !== undefined && value !== false)
+    .map(([key, value]) => ` ${key}="${escape(String(value))}"`)
+    .join("");
+function solidSvg(paths, { tone = "hi", crease = "faint", halo = false, lit = false, flat = false, className, inner = "" } = {}) {
+    const parts = [];
+    if (halo)
+        parts.push(`<path class="iso-halo" d="${paths.fill}"/>`);
+    parts.push(`<path class="iso-fill" d="${paths.fill}"/>`);
+    if (!flat) {
+        paths.shades.forEach((d, shade) => {
+            if (d)
+                parts.push(`<path class="iso-shade" data-shade="${shade}" d="${d}"/>`);
+        });
+        parts.push(`<path class="iso-top" d="${paths.top}"/>`);
+    }
+    if (crease !== "none" && paths.crease)
+        parts.push(`<path class="iso-line iso-crease" data-tone="${crease}" d="${paths.crease}"/>`);
+    if (crease !== "none" && paths.bevel)
+        parts.push(`<path class="iso-line iso-bevel" data-tone="${crease}" d="${paths.bevel}"/>`);
+    if (inner)
+        parts.push(inner);
+    parts.push(`<path class="iso-line iso-edge" data-tone="${tone}" d="${paths.outline}"/>`);
+    return `<g${attrs({ class: className ? `iso-solid ${className}` : "iso-solid", "data-lit": lit ? "" : undefined, "data-seamless": paths.seamless ? "" : undefined })}>${parts.join("")}</g>`;
+}
+function lineSvg(d, { tone = "lo", dotted = false, dashed = false, flow = false, className, free } = {}) {
+    if (!d)
+        return "";
+    return `<path${attrs({
+        class: className ? `iso-line ${className}` : "iso-line",
+        "data-tone": tone,
+        "data-free": free === true ? "" : free || undefined,
+        "data-dotted": dotted ? "" : undefined,
+        "data-dashed": dashed ? "" : undefined,
+        "data-flow": flow ? "" : undefined,
+        d,
+    })}/>`;
+}
+function dotsSvg(points, { size = 0.5, tone = "mid", pulse = false } = {}) {
+    const dots = points
+        .map(([x, y, alpha], index) => `<circle cx="${tenth(x)}" cy="${tenth(y)}" r="${size}"${alpha !== undefined && alpha < 1 ? ` fill-opacity="${Math.max(0, alpha).toFixed(2)}"` : ""}${pulse ? ` data-pulse="" style="--pulse-at:${(index * 137) % 1600}ms"` : ""}/>`)
+        .join("");
+    return `<g class="iso-dots" data-tone="${tone}">${dots}</g>`;
+}
+function fadedSvg(list, style = {}) {
+    const groups = new Map();
+    for (const entry of list) {
+        const [d, alpha] = Array.isArray(entry) ? entry : [entry.d, entry.alpha];
+        if (!d || !(alpha > 0.02))
+            continue;
+        const level = Math.min(1, Math.round(alpha * 20) / 20);
+        groups.set(level, (groups.get(level) ?? "") + d);
+    }
+    return [...groups].map(([alpha, d]) => (alpha >= 1 ? lineSvg(d, style) : `<g opacity="${alpha.toFixed(2)}">${lineSvg(d, style)}</g>`)).join("");
+}
+function fadeLineSvg(points, { fade = [0, 0], tone = "lo", className, stops = 6 } = {}) {
+    if (points.length < 2)
+        return "";
+    const ease = (t) => t * t * (3 - 2 * t);
+    const hashOf = (text) => {
+        let hash = 2166136261;
+        for (let index = 0; index < text.length; index++)
+            hash = Math.imul(hash ^ text.charCodeAt(index), 16777619);
+        return (hash >>> 0).toString(36);
+    };
+    const lengths = [0];
+    for (let index = 1; index < points.length; index++)
+        lengths.push(lengths[index - 1] + Math.hypot(points[index][0] - points[index - 1][0], points[index][1] - points[index - 1][1]));
+    const at = (length) => {
+        let index = 1;
+        while (index < points.length - 1 && lengths[index] < length)
+            index++;
+        const span = lengths[index] - lengths[index - 1] || 1;
+        const t = Math.max(0, Math.min(1, (length - lengths[index - 1]) / span));
+        return [points[index - 1][0] + (points[index][0] - points[index - 1][0]) * t, points[index - 1][1] + (points[index][1] - points[index - 1][1]) * t];
+    };
+    const pieceOf = (from, to) => [at(from), ...points.filter((_, index) => lengths[index] > from + 1e-6 && lengths[index] < to - 1e-6), at(to)];
+    const total = lengths[lengths.length - 1];
+    if (total < 1e-6)
+        return "";
+    let [start, end] = Array.isArray(fade) ? fade : [fade, fade];
+    if (start + end > total) {
+        const share = total / (start + end);
+        start *= share;
+        end *= share;
+    }
+    const paint = `var(--anatomy-${tone})`;
+    const ramp = (piece, rising) => {
+        const d = pathOf(piece);
+        const [x1, y1] = piece[0];
+        const [x2, y2] = piece[piece.length - 1];
+        const id = `iso-fade-${hashOf(`${d}|${tone}|${rising}`)}`;
+        const marks = Array.from({ length: stops + 1 }, (_, index) => {
+            const t = index / stops;
+            const alpha = ease(rising ? t : 1 - t);
+            return `<stop offset="${t.toFixed(3)}" stop-opacity="${alpha.toFixed(3)}" style="stop-color:${paint}"/>`;
+        }).join("");
+        const gradient = `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${tenth(x1)}" y1="${tenth(y1)}" x2="${tenth(x2)}" y2="${tenth(y2)}">${marks}</linearGradient>`;
+        return `<defs>${gradient}</defs><path${attrs({ class: className ? `iso-line ${className}` : "iso-line", "data-tone": tone, "data-free": rising ? "start" : "end", d, style: `stroke:url(#${id})` })}/>`;
+    };
+    const parts = [];
+    if (start > 0.05)
+        parts.push(ramp(pieceOf(0, start), true));
+    if (total - end - start > 0.05)
+        parts.push(lineSvg(pathOf(pieceOf(start, total - end)), { tone, className }));
+    if (end > 0.05)
+        parts.push(ramp(pieceOf(total - end, total), false));
+    return `<g class="iso-fade">${parts.join("")}</g>`;
+}
+function wireSvg(from, to, { via = [], tone = "lo", dotted = false, dashed = false, flow = false, ends = "both", size = 1.2 } = {}) {
+    const d = pathOf([from, ...via, to]);
+    const end = ([x, y]) => `<circle class="iso-wire-end" cx="${tenth(x)}" cy="${tenth(y)}" r="${size}"/>`;
+    return `<g class="iso-wire" data-tone="${tone}">${lineSvg(d, { tone, dotted, dashed, flow })}${ends === "both" || ends === "from" ? end(from) : ""}${ends === "both" || ends === "to" ? end(to) : ""}</g>`;
+}
+function faceTextSvg(transform, text, { size = 3, tone = "mid", anchor = "start" } = {}) {
+    return `<text class="iso-face-text" data-tone="${tone}" transform="${transform}" font-size="${size}" text-anchor="${anchor}">${escape(text)}</text>`;
+}
+function groupSvg(children, extra = {}) {
+    return `<g${attrs(extra)}>${Array.isArray(children) ? children.join("") : children}</g>`;
+}
+function figureSvg({ width, height, label, body, standalone = false, className }) {
+    const style = standalone ? `<style>${ISO_CSS}</style>` : "";
+    return `<svg${attrs({
+        xmlns: "http://www.w3.org/2000/svg",
+        class: `iso-svg${standalone ? " iso" : ""}${className ? ` ${className}` : ""}`,
+        "data-theme": standalone || undefined,
+        viewBox: `0 0 ${width} ${height}`,
+        role: "img",
+        "aria-label": label,
+    })}>${style}${Array.isArray(body) ? body.join("") : body}</svg>`;
+}
+function swatchSvg(mark) {
+    if (mark === "raised" || mark === "flat" || mark === "lit") {
+        const body = mark === "flat" ? "M2 6.5 8 3.5 14 6.5 8 9.5Z" : "M2 4.5 8 1.5 14 4.5 14 6 8 9 2 6Z";
+        const crease = mark === "flat" ? "" : `<path class="iso-swatch-crease" d="M2 4.5 8 7.5 14 4.5"/>`;
+        return `<svg class="iso-swatch" data-mark="${mark}" viewBox="0 0 16 10" aria-hidden="true"><path d="${body}"/>${crease}</svg>`;
+    }
+    return `<svg class="iso-swatch" data-mark="${mark}" viewBox="0 0 16 10" aria-hidden="true"><path d="M1.5 5h13"/></svg>`;
+}
+function plateHtml({ fig, title, hint, readout = "", keys = [], caption, body }) {
+    const corner = (name, text, extra = "") => `<span class="iso-plate-corner" data-corner="${name}"${extra}>${escape(text)}</span>`;
+    const legend = keys.length || caption
+        ? `<figcaption class="iso-legend">${keys.length ? `<span class="iso-keys">${keys.map((key) => `<span class="iso-key">${swatchSvg(key.mark)}${escape(key.label)}</span>`).join("")}</span>` : ""}${caption ? `<span class="iso-caption">${escape(caption)}</span>` : ""}</figcaption>`
+        : "";
+    return `<figure class="iso-figure"><div class="iso-plate"><div class="iso-plate-corners" aria-hidden="true">${corner("fig", fig)}${title ? corner("title", title) : ""}${hint ? corner("hint", hint) : ""}${corner("readout", readout, " data-readout")}</div>${body}</div>${legend}</figure>`;
+}
+function pageHtml({ title, theme = "dark", body, script = "", width = 650 }) {
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escape(title)}</title><style>${ISO_CSS}${PAGE_CSS.replace("__WIDTH__", String(width))}</style></head><body class="iso" data-theme="${theme}"><main class="iso-page">${body}</main>${script ? `<script type="module">${script.replace(/<\/(script)/gi, "<\\/$1")}<\/script>` : ""}</body></html>`;
+}
+const PAGE_CSS = `
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body[data-theme="light"]{color-scheme:light}
+body{margin:0;background:var(--anatomy-page);color:var(--anatomy-text);font:14px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.iso-page{width:min(__WIDTH__px,100% - 32px);margin:64px auto 96px}
+`;
+const ISO_CSS = `
+.iso{
+  --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
+  --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
+  --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
+  --anatomy-lit-top:#262626;--anatomy-lit-shade:#1d1d1d;
+  --anatomy-hi:#d4d4d4;--anatomy-mid:#6a6a6a;--anatomy-lo:#3e3e3e;--anatomy-faint:#2a2a2a;--anatomy-lit:#ffffff;
+  --anatomy-halo:#050505;--anatomy-halo-opacity:.9;--anatomy-dot:#e6e6e6;
+  --anatomy-red:#ff6b6b;--anatomy-green:#6be0a0;--anatomy-blue:#6b9bff;
+  --anatomy-weight:.6px;--anatomy-ease:cubic-bezier(.32,.72,0,1);
+  --anatomy-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff0a,inset 0 0 0 1px #ffffff06,0 0 0 1px #00000026,0 1px 1px -.5px #00000014,0 3px 3px -1.5px #00000014,0 6px 6px -3px #00000014,0 12px 12px -6px #00000014;
+}
+.iso[data-theme="light"]{
+  --anatomy-page:#f2f2ef;--anatomy-card:#fbfbfa;--anatomy-text:#57575a;--anatomy-strong:#18181a;--anatomy-muted:#8c8c90;
+  --anatomy-paper:#fbfbfa;--anatomy-face:#ffffff;--anatomy-top:#ffffff;
+  --anatomy-shade-0:#dcdcd9;--anatomy-shade-1:#e5e5e2;--anatomy-shade-2:#ededea;--anatomy-shade-3:#f4f4f1;
+  --anatomy-lit-top:#ffffff;--anatomy-lit-shade:#eeeeeb;
+  --anatomy-hi:#26262a;--anatomy-mid:#8a8a8f;--anatomy-lo:#b4b4b8;--anatomy-faint:#d4d4d6;--anatomy-lit:#000000;
+  --anatomy-halo:#8a8a80;--anatomy-halo-opacity:.32;--anatomy-dot:#3a3a3e;
+  --anatomy-red:#e5484d;--anatomy-green:#30a46c;--anatomy-blue:#3e63dd;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff,0 0 0 1px #0000000f,0 1px 1px -.5px #0000000a,0 3px 3px -1.5px #0000000a,0 6px 6px -3px #0000000a,0 12px 12px -6px #0000000a;
+}
+.iso-svg{display:block;width:100%;height:auto;overflow:visible}
+.iso-svg path,.iso-svg circle{vector-effect:non-scaling-stroke}
+.iso-fill{fill:var(--anatomy-paper);stroke:none}
+.iso-solid[data-lit]>.iso-fill{fill:var(--anatomy-face)}
+.iso-shade,.iso-top{stroke:none}
+.iso-shade[data-shade="0"]{fill:var(--anatomy-shade-0)}
+.iso-shade[data-shade="1"]{fill:var(--anatomy-shade-1)}
+.iso-shade[data-shade="2"]{fill:var(--anatomy-shade-2)}
+.iso-shade[data-shade="3"]{fill:var(--anatomy-shade-3)}
+.iso-top{fill:var(--anatomy-top)}
+.iso-solid[data-lit]>.iso-top{fill:var(--anatomy-lit-top)}
+.iso-solid[data-lit]>.iso-shade{fill:var(--anatomy-lit-shade)}
+.iso-solid[data-seamless]>.iso-shade,.iso-solid[data-seamless]>.iso-top{stroke-width:.4;stroke-linejoin:round}
+.iso-solid[data-seamless]>.iso-shade[data-shade="0"]{stroke:var(--anatomy-shade-0)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="1"]{stroke:var(--anatomy-shade-1)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="2"]{stroke:var(--anatomy-shade-2)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="3"]{stroke:var(--anatomy-shade-3)}
+.iso-solid[data-seamless]>.iso-top{stroke:var(--anatomy-top)}
+.iso-solid[data-seamless][data-lit]>.iso-top{stroke:var(--anatomy-lit-top)}
+.iso-solid[data-seamless][data-lit]>.iso-shade{stroke:var(--anatomy-lit-shade)}
+.iso-solid[data-lit]>.iso-edge{stroke:var(--anatomy-lit)}
+.iso-halo{fill:var(--anatomy-halo);stroke:none;filter:blur(9px);opacity:var(--anatomy-halo-opacity);transform:translateY(3px)}
+.iso-line{fill:none;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight);stroke-linecap:round;stroke-linejoin:round}
+.iso-line[data-tone="hi"]{stroke:var(--anatomy-hi)}
+.iso-line[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.iso-line[data-tone="lo"]{stroke:var(--anatomy-lo)}
+.iso-line[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.iso-line[data-tone="lit"]{stroke:var(--anatomy-lit)}
+.iso-line[data-tone="red"]{stroke:var(--anatomy-red)}
+.iso-line[data-tone="green"]{stroke:var(--anatomy-green)}
+.iso-line[data-tone="blue"]{stroke:var(--anatomy-blue)}
+.iso-line[data-dotted]{stroke-dasharray:.01 3.5;stroke-width:1}
+.iso-line[data-dashed]{stroke-dasharray:3 3}
+.iso-line[data-flow]{stroke-dasharray:2 6}
+.iso-wire-end{fill:var(--anatomy-paper);stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
+.iso-wire[data-tone="hi"] .iso-wire-end{stroke:var(--anatomy-hi)}
+.iso-wire[data-tone="mid"] .iso-wire-end{stroke:var(--anatomy-mid)}
+.iso-wire[data-tone="faint"] .iso-wire-end{stroke:var(--anatomy-faint)}
+.iso-wire[data-tone="lit"] .iso-wire-end{stroke:var(--anatomy-lit)}
+.iso-dots circle{fill:var(--anatomy-dot);stroke:none;opacity:.32}
+.iso-dots[data-tone="hi"] circle{opacity:.85}
+.iso-dots[data-tone="mid"] circle{opacity:.45}
+.iso-dots[data-tone="lo"] circle{opacity:.22}
+.iso-dots[data-tone="faint"] circle{opacity:.12}
+.iso-face-text{fill:var(--anatomy-mid);font-family:var(--anatomy-mono);letter-spacing:.04em}
+.iso-face-text[data-tone="hi"]{fill:var(--anatomy-hi)}
+.iso-face-text[data-tone="lo"]{fill:var(--anatomy-lo)}
+.iso-face-text[data-tone="faint"]{fill:var(--anatomy-faint)}
+.tb-body{fill:var(--anatomy-shade-2);stroke:none}
+.tb-shine{fill:var(--anatomy-top);stroke:none}
+.tb-shade{fill:var(--anatomy-shade-0);stroke:none}
+.tb-ring{fill:none;stroke:var(--anatomy-lo);stroke-width:.45;stroke-linecap:butt;stroke-linejoin:round}
+.tb-ring[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.tb-ring[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.tb-ring[data-tone="hi"]{stroke:var(--anatomy-hi)}
+@keyframes iso-flow{to{stroke-dashoffset:-32}}
+@keyframes iso-pulse{0%,100%{opacity:.18}12%{opacity:1}40%{opacity:.18}}
+.iso-line[data-flow]{animation:iso-flow 1600ms linear infinite}
+.iso-dots circle[data-pulse]{animation:iso-pulse 1600ms steps(1,end) infinite;animation-delay:var(--pulse-at,0ms)}
+.iso-figure{margin:32px 0 36px}
+.iso-plate{position:relative;padding:52px 24px;border-radius:0;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-mid);--anatomy-paper:var(--anatomy-card)}
+.iso-plate-corners{position:absolute;inset:18px 20px;pointer-events:none}
+.iso-plate-corner{position:absolute;color:var(--anatomy-muted);font-family:var(--anatomy-mono);font-size:10.5px;line-height:1;letter-spacing:.04em;white-space:nowrap}
+.iso-plate-corner[data-corner="fig"]{top:0;left:0;color:var(--anatomy-text)}
+.iso-plate-corner[data-corner="title"]{top:0;right:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="hint"]{bottom:0;left:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="readout"]{right:0;bottom:0;color:var(--anatomy-text);font-variant-numeric:tabular-nums}
+.iso-plate .iso-svg{margin:0 auto}
+.iso-legend{display:grid;gap:8px;margin-top:12px;color:var(--anatomy-muted);font-size:13px;line-height:1.55}
+.iso-keys{display:flex;flex-wrap:wrap;gap:6px 18px}
+.iso-key{display:inline-flex;align-items:center;gap:7px}
+.iso-swatch{width:16px;height:10px;flex:none;overflow:visible}
+.iso-swatch path{fill:none;stroke:var(--anatomy-hi);stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.iso-swatch[data-mark="raised"] path,.iso-swatch[data-mark="flat"] path{stroke:var(--anatomy-mid)}
+.iso-swatch[data-mark="lit"] path{stroke:var(--anatomy-lit)}
+.iso-swatch[data-mark="dim"] path{stroke:var(--anatomy-lo)}
+.iso-swatch[data-mark="dotted"] path{stroke-dasharray:.01 3;stroke-width:1.4}
+.iso-swatch[data-mark="dashed"] path{stroke-dasharray:3 2.5}
+.iso-swatch[data-mark="red"] path{stroke:var(--anatomy-red)}
+.iso-swatch[data-mark="green"] path{stroke:var(--anatomy-green)}
+.iso-swatch[data-mark="blue"] path{stroke:var(--anatomy-blue)}
+.iso-swatch-crease{stroke:var(--anatomy-lo)!important}
+@media (max-width:560px){.iso-plate{padding:48px 12px 70px}.iso-plate-corner[data-corner="hint"]{bottom:18px}}
+@media (prefers-reduced-motion:reduce){.iso-line[data-flow],.iso-dots circle[data-pulse]{animation:none}}
+`;
+
+// World: x runs nose → tail; y spans the craft; z points upward.
+// Parts: 6 ducts × (48 wall segments + 8 blades + hub + stators + bolts),
+// 3 spars, 2 skids, 4 struts, 12 battery cells, tray, cabin ribs, glazing,
+// 2 seats, ESC heat sink, flight computer, housing, power bus and fasteners.
+const $=id=>document.getElementById(id), P={origin:[450,350],scale:1.16,azimuth:36,elevation:27};
+let mode='hover',part='battery',paused=false,phase=0,last=0,angle=0,power=1,roll=0;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const positions=[[-115,-143],[-115,143],[0,-155],[0,155],[115,-143],[115,143]];
+const colors={shell:'#899c91',frame:'#667f70',battery:'#69a9ae',esc:'#c69562',flight:'#83ad71',glass:'#365e61',seat:'#617065',fan:'#a7b7aa'};
+let faces=[];
+const project=p=>iso(p,P), near=p=>depthOf(p,P);
+function pose(p){const a=roll;return [p[0],p[1]*Math.cos(a)-(p[2]-65)*Math.sin(a),65+p[1]*Math.sin(a)+(p[2]-65)*Math.cos(a)];}
+function poly(points,color,group='',shade=1){const pts=points.map(pose),d=pts.map(project).map(p=>p.map(n=>n.toFixed(2)).join(',')).join(' ');faces.push({depth:pts.reduce((s,p)=>s+near(p),0)/pts.length,html:`<polygon points="${d}" fill="${color}" fill-opacity="${shade}" stroke="#172a20" stroke-width=".65" stroke-linejoin="round"${group?` class="hot" data-pick="${group}"`:''}/>`});}
+function box(x,y,z,w,d,h,c,g=''){const p=[[x,y,z],[x+w,y,z],[x+w,y+d,z],[x,y+d,z]],q=p.map(v=>[v[0],v[1],v[2]+h]);poly(p,c,g,.65);for(let i=0;i<4;i++)poly([p[i],p[(i+1)%4],q[(i+1)%4],q[i]],c,g,.65+i*.07);poly(q,c,g);}
+function line(a,b,c='#799080',width=2){const pts=[a,b].map(pose);faces.push({depth:(near(pts[0])+near(pts[1]))/2+.03,html:`<path d="M${project(pts[0])}L${project(pts[1])}" stroke="${c}" stroke-width="${width}" stroke-linecap="round" fill="none"/>`});}
+function bolt(p){const q=pose(p),s=project(q);faces.push({depth:near(q)+.1,html:`<circle cx="${s[0]}" cy="${s[1]}" r="1.35" fill="#d0d9cb" stroke="#253c2e" stroke-width=".6"/>`});}
+function active(g){return part===g;}
+function col(g){return active(g)?({battery:'#83cad0',esc:'#e0aa70',flight:'#b4d38e',fan:'#c5d7bf',frame:'#a4bba3'}[g]||colors[g]):colors[g];}
+function force(a,b,color,marker){const u=project(pose(a)),v=project(pose(b));return `<path d="M${u}L${v}" stroke="${color}" stroke-width="2" marker-end="url(#${marker})" fill="none" opacity=".85"/>`;}
+function craft(t){faces=[];let vectors='';
+ // Landing runners, supporting legs and crossmembers.
+ for(const y of [-38,38]){box(-113,y-3,3,228,6,6,col('frame'),'frame');for(const x of [-70,68]){line([x,y,9],[x-15,y*.62,49],col('frame'),7);bolt([x,y,10]);} }
+ box(-118,-27,46,240,54,8,col('frame'),'frame');
+ for(const x of [-115,0,115]){box(x-5,-143,69,10,286,8,col('frame'),'frame');for(const y of [-30,30])bolt([x,y,78]);}
+ // Rounded keel and rear shell with panel joints.
+ const ring=[[-151,-8],[-129,-25],[-80,-34],[100,-30],[141,-16],[150,0],[141,16],[100,30],[-80,34],[-129,25]];
+ const lower=ring.map(([x,y])=>[x,y,49]),upper=ring.map(([x,y])=>[x,y,68]);
+ for(let i=0;i<ring.length;i++){const j=(i+1)%ring.length,n=Math.ceil(Math.hypot(ring[i][0]-ring[j][0],ring[i][1]-ring[j][1])/16),mix=(a,b,t)=>a.map((v,k)=>v+(b[k]-v)*t);for(let k=0;k<n;k++)poly([mix(lower[i],lower[j],k/n),mix(lower[i],lower[j],(k+1)/n),mix(upper[i],upper[j],(k+1)/n),mix(upper[i],upper[j],k/n)],colors.shell,'frame',.8);}
+ // Split the long floor into real coplanar patches so a single large face
+ // cannot incorrectly paint over cells on the far side of the tray.
+ const clip=(pts,axis,value,sign)=>{let out=[];for(let i=0;i<pts.length;i++){let a=pts[i],b=pts[(i+1)%pts.length],da=(a[axis]-value)*sign,db=(b[axis]-value)*sign;if(da>=0)out.push(a);if((da>=0)!==(db>=0)){let t=da/(da-db);out.push(a.map((v,k)=>v+t*(b[k]-v)));}}return out;};
+ for(let x=-160;x<160;x+=16)for(let y=-40;y<40;y+=16){let pts=upper;for(const [ax,v,s] of [[0,x,1],[0,x+16,-1],[1,y,1],[1,y+16,-1]])pts=clip(pts,ax,v,s);if(pts.length>2)poly(pts,colors.shell,'frame');}
+ // Seats and instrument panel in forward cabin.
+ for(const y of [-19,3]){box(-109,y,69,25,17,5,colors.seat,'flight');box(-86,y,73,5,17,25,colors.seat,'flight');box(-85,y+3,98,4,11,7,colors.seat,'flight');}
+ box(-133,-19,73,10,38,12,col('flight'),'flight');box(-132,-14,85,8,12,1,'#b2d9ad','flight');
+ // Structural hoops and glazing strips.
+ for(const x of [-140,-108,-76]){line([x,-28,65],[x+15,-23,111],'#a2b5a5',3);line([x+15,-23,111],[x+15,23,111],'#a2b5a5',3);line([x+15,23,111],[x,28,65],'#a2b5a5',3);}
+ poly([[-147,-8,67],[-140,-25,67],[-125,-23,111],[-92,-23,111],[-96,-30,68]],colors.glass,'flight',.8);
+ poly([[-125,-23,111],[-125,23,111],[-92,23,111],[-92,-23,111]],colors.glass,'flight',.65);
+ // Battery tray and individually mounted cells.
+ box(-61,-25,69,92,50,4,'#476a60','battery');
+ for(let i=0;i<6;i++)for(let j=0;j<2;j++){let x=-58+i*14.2,y=-22+j*23;box(x,y,73,12,20,25,col('battery'),'battery');box(x+3,y+6,98,6,7,2,'#acc9bd','battery');bolt([x+9,y+16,99]);}
+ for(const y of [-12,12])box(-54,y,101,79,2,2,'#c5a76d','battery');
+ // ESC with heat-sink fins and a separate flight computer.
+ box(43,-24,70,37,48,15,col('esc'),'esc');for(let x=46;x<79;x+=4)box(x,-22,85,1.5,44,5,'#c5ad8a','esc');
+ box(95,-20,71,28,40,12,col('flight'),'flight');for(const x of [99,119])for(const y of [-16,16])bolt([x,y,84]);
+ for(let j=0;j<5;j++)box(99+j*4,-15,84,2,8,1,'#9ac88f','flight');
+ for(const y of [-28,28])box(-65,y,70,198,2,4,'#957c52','esc');
+ for(const x of [-63,35,85,132]){for(const y of [-29,28])box(x,y,68,3,2,36,colors.frame,'frame');line([x,-29,104],[x,29,104],colors.frame,2);}
+ if(!$('cutaway').checked){box(-68,-31,72,205,62,34,'#829789','frame');for(const x of [-60,32,88,129])for(const y of [-26,26])bolt([x,y,107]);}
+ // Each fan is constructed in its own tilted coordinate frame.
+ positions.forEach(([x,y],i)=>{const th=angle,ct=Math.cos(th),st=Math.sin(th),z=82;const f=(u,v,s)=>[x+u*ct-s*st,y+v,z+u*st+s*ct];const c=col('fan');
+  for(let j=0;j<40;j++){const a=j*Math.PI/20,b=(j+1)*Math.PI/20,pt=(r,a,s)=>f(r*Math.cos(a),r*Math.sin(a),s);poly([pt(36,a,-5),pt(36,b,-5),pt(36,b,5),pt(36,a,5)],c,'fan',.78);poly([pt(31,a,5),pt(31,b,5),pt(36,b,5),pt(36,a,5)],c,'fan');poly([pt(31,a,-5),pt(31,b,-5),pt(31,b,5),pt(31,a,5)],'#526d5a','fan');}
+  for(let j=0;j<4;j++){const a=j*Math.PI/2;const r=(u,v)=>f(u*Math.cos(a)-v*Math.sin(a),u*Math.sin(a)+v*Math.cos(a),-3);poly([r(6,-1.2),r(31,-1.2),r(31,1.2),r(6,1.2)],'#556f5c','fan');}
+  const bias=mode==='roll'?(y>0?.22:-.22):0,fi=power*(1+bias)/6;
+  for(let j=0;j<8;j++){const a=j*Math.PI/4+phase*(1+bias)*(i%2?-1:1),r=(u,v,s=1)=>f(u*Math.cos(a)-v*Math.sin(a),u*Math.sin(a)+v*Math.cos(a),s);poly([r(5,-2),r(29,-4),r(29,1),r(8,4)],'#bdc9b9','fan');}
+  for(let j=0;j<16;j++){let a=j*Math.PI/8,b=(j+1)*Math.PI/8;poly([f(7*Math.cos(a),7*Math.sin(a),0),f(7*Math.cos(b),7*Math.sin(b),0),f(5*Math.cos(b),5*Math.sin(b),8),f(5*Math.cos(a),5*Math.sin(a),8)],'#c6d3c1','fan');}
+  for(let j=0;j<8;j++){const a=j*Math.PI/4;bolt(f(33.5*Math.cos(a),33.5*Math.sin(a),5.4));}
+  if($('showForces').checked&&power>.01)vectors+=force(f(0,0,13),f(0,0,13+fi*210),'#a4e3b4','arrow');
+ });
+ faces.sort((a,b)=>a.depth-b.depth);$('model').innerHTML=faces.map(f=>f.html).join('');
+ if($('showForces').checked)vectors+=force([0,0,64],[0,0,5],'#eab17a','weight');$('vectors').innerHTML=vectors;
+}
+const descriptions={battery:['电池组 / 储存能量','电池输出直流电，经配电系统送到各路电控。电池管理系统监测电压、温度与荷电状态。蓝色模块用于示意；仅凭图片无法知道容量、续航及散热能力。'],esc:['电控与电机 / 让每个风扇独立响应','电控把直流电调制成驱动电机的电流，改变转速或扭矩。这里假设每个风扇有独立电机；原图中央的大电机若要驱动远处风扇，还需要图中未明确画出的轴、齿轮等传动。'],fan:['涵道风扇 / 用空气动量换取推力','叶片加速空气，空气对飞行器产生反作用力。绿色箭头表示飞行器受到的推力，气流主要向相反方向运动。涵道可保护叶尖并改变流动，但效率和噪声仍取决于尺寸、转速、叶尖间隙与工况。'],flight:['飞行控制 / 持续修正，而非固定转速','飞控综合惯性传感器、高度与位置等信息，将目标姿态转成各风扇推力指令。横滚模式展示两侧差动推力造成的滚转趋势；真实飞控还要主动消除误差。偏航通常依赖反扭矩差或推力矢量，不能从原图确定方案。'],frame:['机身与起落架 / 把力传下去','机臂将风扇载荷传到机身，机身支承座舱、电池和设备，起落架承担地面载荷。电池位置影响重心；推力合力若偏离重心，就会产生转动力矩。图中机翼状横梁是否产生足够气动升力无法判断。']};
+function selectPart(p){part=p;document.querySelectorAll('[data-part]').forEach(b=>b.classList.toggle('active',b.dataset.part===p));$('detail').innerHTML='<h3>'+descriptions[p][0]+'</h3><p>'+descriptions[p][1]+'</p>';if(paused||reduce)craft(0);}
+function calc(q,deg,bank=0){let a=deg*Math.PI/180,b=bank*Math.PI/180;return{vertical:q*Math.cos(a)*Math.cos(b),horizontal:q*Math.sin(a),acceleration:9.81*(q*Math.cos(a)*Math.cos(b)-1)};}
+window.flightModel=calc;
+function readout(){const deg=$('original').checked?90:+$('tilt').value,q=+$('power').value/100,r=calc(q,deg,mode==='roll'?8:0);$('powerValue').value=Math.round(q*100)+'% W';$('tiltValue').value=deg+'°';$('tilt').disabled=$('original').checked;const labels={hover:'悬停',forward:'前飞',roll:'横滚'};$('viewName').textContent=($('original').checked?'原图朝向对照':'假设可倾转')+' · '+labels[mode];$('lift').textContent=r.vertical.toFixed(2);$('horizontal').textContent=r.horizontal.toFixed(2);$('accel').textContent=(Math.abs(r.acceleration)<.05?'0.0':r.acceleration.toFixed(1));let status=r.vertical>.98&&r.vertical<1.02?'垂直方向近似平衡':r.vertical<1?'垂直推力不足，有下落趋势':'垂直推力大于重力，有上升趋势';if(mode==='roll')status+=' · 存在横滚力矩';$('state').textContent=status;
+ let title,text;if($('original').checked){title='盘面竖直 ≠ 垂直起降';text='此处把图示轴线近似为水平：再加油门，也只会增大水平推力。没有其他升力来源，垂直净加速度仍为 −g。';}else if(mode==='roll'){title='两侧差动，产生横滚力矩';text='一侧推力提高 22%，另一侧降低 22%，总量不变。图中固定 8° 倾斜只表示横滚趋势，并非动态仿真。倾斜后垂直分量也会减小。';}else if(deg>0){title='前飞时，需要补偿垂直分量';text='推力向前倾斜，水平分量增加，垂直分量减少。忽略机翼升力时，要保持高度，需要总推力 / 重力 = 1 / cosθ。无阻力模型无法预测巡航速度。';}else{title='悬停：总推力与重力相抵';text='六个风扇平均分担载荷；推力向上、气流向下。100% W 表示总推力等于重力，不是电机油门百分比，也不是功率百分比。';}$('explanation').innerHTML='<b>'+title+'</b>'+text;
+ return{deg,q};}
+function setMode(m){mode=m;$('original').checked=false;$('tilt').value=m==='forward'?25:0;$('power').value=m==='forward'?110:m==='roll'?101:100;document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));update();}
+function update(){const s=readout();if(paused||reduce){angle=s.deg*Math.PI/180;power=s.q;roll=mode==='roll'?8*Math.PI/180:0;craft(0);}}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));document.querySelectorAll('[data-part]').forEach(b=>b.onclick=()=>selectPart(b.dataset.part));['power','tilt','original','cutaway','showForces'].forEach(id=>$(id).addEventListener('input',update));
+$('scene').addEventListener('click',e=>{let p=e.target.dataset.pick;if(p)selectPart(p);});
+$('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'继续动画':'暂停动画';update();};$('reset').onclick=()=>{paused=false;$('pause').textContent='暂停动画';$('cutaway').checked=true;$('showForces').checked=true;setMode('hover');selectPart('battery');};
+// Datum plate is fixed to the world, unlike the explanatory attitude pose.
+let grid='';for(let x=-280;x<=280;x+=40)grid+=`<path d="M${project([x,-230,0])}L${project([x,230,0])}"/>`;for(let y=-230;y<=230;y+=40)grid+=`<path d="M${project([-280,y,0])}L${project([280,y,0])}"/>`;$('ground').innerHTML='<g stroke="#7fa08b" stroke-width=".5" opacity=".13">'+grid+'</g><ellipse cx="450" cy="371" rx="200" ry="59" fill="#0b1a11" opacity=".25"/>';
+let visible=true;new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;}).observe($('scene'));
+function loop(t){requestAnimationFrame(loop);if(t-last<45)return;const dt=Math.min((t-last)/1000,.08);last=t;if(paused||reduce||!visible||document.hidden)return;const target=readout(),f=1-Math.exp(-dt*7);angle+=(target.deg*Math.PI/180-angle)*f;power+=(target.q-power)*f;roll+=((mode==='roll'?8*Math.PI/180:0)-roll)*f;phase+=dt*power*7;craft(t);}
+selectPart('battery');readout();craft(0);requestAnimationFrame(loop);
+</script></html>
